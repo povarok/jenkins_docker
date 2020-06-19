@@ -40,7 +40,7 @@ pipeline {
                     ]) {
 
                         sh "echo '${password}' | sudo -S docker build ${WORKSPACE}/auto -t docker_image_komarov "
-                        sh "echo '${password}' | sudo -S docker run -d -p 3333:80 --name nginx_komarov docker_image_komarov"
+                        sh "echo '${password}' | sudo -S docker run -d  --name nginx_komarov -v ${WORKSPACE}/auto:/stats_folder docker_image_komarov"
                     }
                 }
             }
@@ -58,8 +58,8 @@ pipeline {
                         } catch (Exception e) {
                             print 'file exist'
                         }
-                        sh "echo '${password}' | sudo -S docker exec -t nginx_komarov df -h >> ${WORKSPACE}/stats.txt"
-                        sh "echo '${password}' | sudo -S docker exec -t nginx_komarov top -n 1 -b >> ${WORKSPACE}/stats.txt"
+                        sh "echo '${password}' | sudo -S docker exec -t nginx_komarov df -h >> /stats_folder/stats.txt"
+                        sh "echo '${password}' | sudo -S docker exec -t nginx_komarov top -n 1 -b >> /stats_folder/stats.txt"
                     }
                 }
             }
