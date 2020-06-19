@@ -11,8 +11,8 @@ pipeline {
                         passwordVariable: 'password')
                     ]) {
                         try {
-                            sh "echo '${password}' | sudo -S docker stop isng"
-                            sh "echo '${password}' | sudo -S docker container rm isng"
+                            sh "echo '${password}' | sudo -S docker stop nginx_komarov"
+                            sh "echo '${password}' | sudo -S docker container rm nginx_komarov"
                         } catch (Exception e) {
                             print 'container not exist, skip clean'
                         }
@@ -26,7 +26,7 @@ pipeline {
                               extensions                       : [[$class           : 'RelativeTargetDirectory',
                                                                    relativeTargetDir: 'auto']],
                               submoduleCfg                     : [],
-                              userRemoteConfigs                : [[credentialsId: 'IvanSitnikovGit', url: 'https://github.com/sitozzz/jenkins_education.git']]])
+                              userRemoteConfigs                : [[credentialsId: '	4026c49d-8161-4548-a558-017289883160', url: 'https://github.com/povarok/jenkins_docker.git']]])
                 }
             }
         }
@@ -40,7 +40,7 @@ pipeline {
                     ]) {
 
                         sh "echo '${password}' | sudo -S docker build ${WORKSPACE}/auto -t docker_image_komarov "
-                        sh "echo '${password}' | sudo -S docker run -d -p 3333:80 --name docker_image_komarov docker_image_komarov"
+                        sh "echo '${password}' | sudo -S docker run -d -p 3333:80 --name nginx_komarov docker_image_komarov"
                     }
                 }
             }
@@ -58,8 +58,8 @@ pipeline {
                         } catch (Exception e) {
                             print 'file exist'
                         }
-                        sh "echo '${password}' | sudo -S docker exec -t isng df -h >> ${WORKSPACE}/stats.txt"
-                        sh "echo '${password}' | sudo -S docker exec -t isng top -n 1 -b >> ${WORKSPACE}/stats.txt"
+                        sh "echo '${password}' | sudo -S docker exec -t nginx_komarov df -h >> ${WORKSPACE}/stats.txt"
+                        sh "echo '${password}' | sudo -S docker exec -t nginx_komarov top -n 1 -b >> ${WORKSPACE}/stats.txt"
                     }
                 }
             }
