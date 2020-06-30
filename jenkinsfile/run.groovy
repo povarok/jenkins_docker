@@ -1,3 +1,4 @@
+def sudo_pass = 'rtf-ci-456'
 pipeline {
     agent{node('master')}
     stages {
@@ -11,8 +12,7 @@ pipeline {
                         passwordVariable: 'password')
                     ]) {
                         try {
-                            sh "echo '${password}' | sudo -S docker stop nginx_komarov"
-                            sh "echo '${password}' | sudo -S docker container rm nginx_komarov"
+
                         } catch (Exception e) {
                             print 'container not exist, skip clean'
                         }
@@ -38,9 +38,8 @@ pipeline {
                         usernameVariable: 'username',
                         passwordVariable: 'password')
                     ]) {
-
-                        sh "echo '${password}' | sudo -S docker build ${WORKSPACE}/auto -t docker_image_komarov "
-                        sh "echo '${password}' | sudo -S docker run -d  --name nginx_komarov -v /home/adminci/komarov_docker_mnt:/stats_folder docker_image_komarov"
+                        sh "echo '${sudo_pass}' | sudo -S docker build ${WORKSPACE}/auto -t docker_image_komarov"
+                        sh "echo '${sudo_pass}' | sudo -S docker run -d  --name nginx_komarov -v /home/adminci/komarov_docker_mnt:/stats_folder docker_image_komarov"
                     }
                 }
             }
@@ -64,8 +63,18 @@ pipeline {
                 }
             }
         }
-        
+        stage ('Stop container & remove image'){
+                    steps{
+                        script{
+                            withCredentials([
+                                usernamePassword(credentialsId: 'srv_sudo',
+                                usernameVariable: 'username',
+                                passwordVariable: 'password')
+                            ]) {
+                                sh "echo '${password}' | sudo -S docker stop nginx_komarov && docker container rm nginx_komarov"
+                            }
+                        }
+                    }
+                }
     }
-
-    
 }
