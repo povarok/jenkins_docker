@@ -57,8 +57,8 @@ pipeline {
                         } catch (Exception e) {
                             print 'file exist'
                         }
-                        sh "echo '${password}' | sudo -S docker exec -t nginx_komarov  bash -c 'df -h > /stats_folder/stats.txt'"
-                        sh "echo '${password}' | sudo -S docker exec -t nginx_komarov bash -c 'top -n 1 -b >> /stats_folder/stats.txt'"
+                        sh "echo '${sudo_pass}' | sudo -S docker exec -t nginx_komarov  bash -c 'df -h > /stats_folder/stats.txt'"
+                        sh "echo '${sudo_pass}' | sudo -S docker exec -t nginx_komarov bash -c 'top -n 1 -b >> /stats_folder/stats.txt'"
                     }
                 }
             }
@@ -71,7 +71,7 @@ pipeline {
                                 usernameVariable: 'username',
                                 passwordVariable: 'password')
                             ]) {
-                                sh "echo '${password}' | sudo -S docker stop nginx_komarov && docker container rm nginx_komarov"
+                                sh "echo '${sudo_pass}' | sudo -S docker stop nginx_komarov"
                             }
                         }
                     }
