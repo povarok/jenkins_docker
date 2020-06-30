@@ -39,7 +39,7 @@ pipeline {
                         passwordVariable: 'password')
                     ]) {
                         sh "echo '${sudo_pass}' | sudo -S docker build ${WORKSPACE}/auto -t docker_image_komarov"
-                        sh "echo '${sudo_pass}' | sudo -S docker run -d  --name nginx_komarov -v /home/adminci/komarov_docker_mnt:/stats_folder docker_image_komarov"
+                        sh "echo '${sudo_pass}' | sudo -S docker run --rm -d  --name nginx_komarov -v /home/adminci/komarov_docker_mnt:/stats_folder docker_image_komarov"
                     }
                 }
             }
