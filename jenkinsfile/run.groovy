@@ -66,13 +66,7 @@ pipeline {
         stage ('Stop container & remove image'){
                     steps{
                         script{
-                            withCredentials([
-                                usernamePassword(credentialsId: 'srv_sudo',
-                                usernameVariable: 'username',
-                                passwordVariable: 'password')
-                            ]) {
-                                sh "echo '${sudo_pass}' | sudo -S docker stop nginx_komarov"
-                            }
+                            sh "echo '${sudo_pass}' | sudo -S docker stop nginx_komarov"
                         }
                     }
                 }
