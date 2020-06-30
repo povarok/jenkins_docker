@@ -6,17 +6,6 @@ pipeline {
             steps {
                 script {
                     cleanWs()
-                    withCredentials([
-                        usernamePassword(credentialsId: 'srv_sudo',
-                        usernameVariable: 'username',
-                        passwordVariable: 'password')
-                    ]) {
-                        try {
-
-                        } catch (Exception e) {
-                            print 'container not exist, skip clean'
-                        }
-                    }
                 }
                 script {
                     echo 'Update from repository'
@@ -33,33 +22,21 @@ pipeline {
         stage ('Build & run docker image'){
             steps{
                 script{
-                     withCredentials([
-                        usernamePassword(credentialsId: 'srv_sudo',
-                        usernameVariable: 'username',
-                        passwordVariable: 'password')
-                    ]) {
-                        sh "echo '${sudo_pass}' | sudo -S docker build ${WORKSPACE}/auto -t docker_image_komarov"
-                        sh "echo '${sudo_pass}' | sudo -S docker run --rm -d  --name nginx_komarov -v /home/adminci/komarov_docker_mnt:/stats_folder docker_image_komarov"
-                    }
+                     sh "echo '${sudo_pass}' | sudo -S docker build ${WORKSPACE}/auto -t docker_image_komarov"
+                     sh "echo '${sudo_pass}' | sudo -S docker run --rm -d  --name nginx_komarov -v /home/adminci/komarov_docker_mnt:/stats_folder docker_image_komarov"
                 }
             }
         }
         stage ('Get stats & write to file'){
             steps{
                 script{
-                    withCredentials([
-                        usernamePassword(credentialsId: 'srv_sudo',
-                        usernameVariable: 'username',
-                        passwordVariable: 'password')
-                    ]) {
-                        try {
-                            sh "truncate -s 0 ${WORKSPACE}/stats.txt"
-                        } catch (Exception e) {
-                            print 'file exist'
-                        }
-                        sh "echo '${sudo_pass}' | sudo -S docker exec -t nginx_komarov  bash -c 'df -h > /stats_folder/stats.txt'"
-                        sh "echo '${sudo_pass}' | sudo -S docker exec -t nginx_komarov bash -c 'top -n 1 -b >> /stats_folder/stats.txt'"
+                    try {
+                        sh "truncate -s 0 ${WORKSPACE}/stats.txt"
+                    } catch (Exception e) {
+                        print 'file exist'
                     }
+                    sh "echo '${sudo_pass}' | sudo -S docker exec -t nginx_komarov  bash -c 'df -h > /stats_folder/stats.txt'"
+                    sh "echo '${sudo_pass}' | sudo -S docker exec -t nginx_komarov bash -c 'top -n 1 -b >> /stats_folder/stats.txt'"
                 }
             }
         }
